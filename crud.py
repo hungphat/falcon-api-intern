@@ -1,24 +1,21 @@
-from connection import *
 from customers import *
+from connection import *
 import json
 import falcon
 
-data_sess = connection.session
-dataquery = data_sess .query(Customers)
-data = dataquery.all()
+
 
 class CustomersResource:
-
 #------Read------
     def on_get(self, req, resp, id=None):
         if id is None:
             list_data = []
-            for customer in data:
+            for customer in connection.session.query(Customers).all():
                 list_data.append(Customers.to_dict(customer))
             resp.body = json.dumps(list_data)
             resp.status = falcon.HTTP_200
         else:
-            user = dataquery.get(int(id))
+            user = connection.session.query(Customers).get(int(id))
             deltail = Customers.to_dict(user)
             resp.body = json.dumps(deltail)
             resp.status = falcon.HTTP_200
@@ -37,32 +34,32 @@ class CustomersResource:
             raise falcon.HTTPBadRequest('Data dob is required')
         else:
             id_list = []
-            for i in data:
+            for i in connection.session.query(Customers).all():
                 id_list.append(i.id)
             auto_increaseid = (max(id_list)) + 1
             mess = {
                 'id': auto_increaseid
             }
             adduser = Customers(id=auto_increaseid,name = name, dob = dob, updated_at= datetime.now())
-            data_sess.add(adduser)
-            data_sess.commit()
+            connection.session.add(adduser)
+            connection.session.commit()
             resp.body = json.dumps(mess)
 
 
 #------Update------
     def on_put(self, req, resp, id=None):
         body = req.media
-        x = dataquery.get(int(id))
+        x = connection.session.query(Customers).get(int(id))
         if body.get('name') is None:
             x.dob = body['dob']
-            data_sess.commit()
+            connection.session.commit()
         elif body.get('dob') is None:
             x.name = body['name']
-            data_sess.commit()
+            connection.session.commit()
         else:
             x.name = body['name']
             x.dob =  body['dob']
-            data_sess.commit()
+            connection.session.commit()
         x.updated_at = datetime.now()
         output = {
                 "id": x.id,
@@ -70,15 +67,15 @@ class CustomersResource:
                 "dob": f'{x.dob}',
                 "updated_at": f'{x.updated_at}'
         }
-        data_sess.commit()
+        connection.session.commit()
         resp.body = json.dumps(output)
 #------Delete User------
     def on_delete(self, req, resp, id=None):
-        x = dataquery.get(int(id))
-        data_sess.delete(x)
-        data_sess.commit()
+        x = connection.session.query(Customers).get(int(id))
+        connection.session.delete(x)
+        connection.session.commit()
         output = {
             "id" : id
         }
-        data_sess.commit()
+        connection.session.commit()
         resp.body = json.dumps(output)

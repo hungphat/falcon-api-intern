@@ -15,10 +15,10 @@ services:
   api:
     image: hungphat/falcon_intern
     ports:
-      - ${API_PORT:-8888}:8000  # this api will use db from container nn_falcon_start_postgres:5432  having same network
+      - ${API_PORT:-8881}:8000  # this api will use db from container nn_falcon_start_postgres:5432  having same network
     container_name: hungphat_falcon_intern
 
-    restart: always
+#    restart: always
 
 volumes:  # NOTE: volume name will have auto-prefix as the containing-folder name  # we need to customize this as same folder will run for multiple gc member on :staging2 host
   v_postgres:
