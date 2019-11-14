@@ -4,9 +4,9 @@ import json
 import falcon
 
 
-
 class CustomersResource:
-#------Read------
+
+    #------Read------
     def on_get(self, req, resp, id=None):
         if id is None:
             list_data = []
@@ -20,8 +20,7 @@ class CustomersResource:
             resp.body = json.dumps(deltail)
             resp.status = falcon.HTTP_200
 
-
-#------Create------
+    #------Create------
     def on_post(self, req, resp):
         body = req.media
         name = body.get('name')
@@ -46,7 +45,7 @@ class CustomersResource:
             resp.body = json.dumps(mess)
 
 
-#------Update------
+    #------Update------
     def on_put(self, req, resp, id=None):
         body = req.media
         x = connection.session.query(Customers).get(int(id))
@@ -69,7 +68,8 @@ class CustomersResource:
         }
         connection.session.commit()
         resp.body = json.dumps(output)
-#------Delete User------
+
+    #------Delete User------
     def on_delete(self, req, resp, id=None):
         x = connection.session.query(Customers).get(int(id))
         connection.session.delete(x)
